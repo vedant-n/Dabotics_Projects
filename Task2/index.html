@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Application</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('https://img.freepik.com/free-vector/gradient-universe-background_23-2149635763.jpg?w=740&t=st=1719754144~exp=1719754744~hmac=14c7afd74a754f848ef5a660fb7452ecb1b3d77240ddf26723cca329f40c16f9'); /* Add your background image URL here */
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #quiz-container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+        .question {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        .options {
+            list-style-type: none;
+            padding: 0;
+        }
+        .options li {
+            background: #e4e4e4;
+            margin-bottom: 8px;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .options li:hover {
+            background: #d4d4d4;
+        }
+        .options li.selected {
+            background: #4caf50;
+            color: white;
+        }
+        .options li::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.1);
+            transition: left 0.3s;
+        }
+        .options li.selected::after {
+            left: 0;
+        }
+        #submit {
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        #submit:hover {
+            background: #218838;
+        }
+        #result {
+            display: none;
+            margin-top: 20px;
+            font-size: 1.5em;
+            text-align: center;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        .fade-in {
+            animation: fadeIn 1s;
+        }
+    </style>
+</head>
+<body>
+    <div id="quiz-container">
+        <div id="quiz">
+            <div class="question" id="question"></div>
+            <ul class="options" id="options"></ul>
+        </div>
+        <button id="submit">Submit</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "What is the closest planet to the Sun?",
+                options: ["Venus", "Mars", "Mercury", "Earth"],
+                answer: 2
+            },
+            {
+                question: "Which planet is known as the 'Gas Giant'?",
+                options: ["Mars", "Saturn", "Neptune", "Jupiter"],
+                answer: 3
+            },
+            {
+                question: "What is the name of the galaxy we live in?",
+                options: ["Andromeda Galaxy", "Milky Way Galaxy", "Triangulum Galaxy", "Whirlpool Galaxy"],
+                answer: 1
+            },
+            {
+                question: "Which planet has the most moons?",
+                options: ["Earth", "Mars", "Saturn", "Jupiter"],
+                answer: 3
+            },
+            {
+                question: "What is the name of the first man to walk on the moon?",
+                options: ["Yuri Gagarin", "Buzz Aldrin", "Neil Armstrong", "John Glenn"],
+                answer: 2
+            },
+            {
+                question: "Which planet is known as the 'Red Planet'?",
+                options: ["Venus", "Mars", "Mercury", "Jupiter"],
+                answer: 1
+            },
+            {
+                question: "Which is the hottest planet in the solar system?",
+                options: ["Mercury", "Venus", "Mars", "Jupiter"],
+                answer: 1
+            },
+            {
+                question: "What is the name of the largest moon of Saturn?",
+                options: ["Titan", "Europa", "Ganymede", "Callisto"],
+                answer: 0
+            },
+            {
+                question: "What is the name of the first artificial satellite launched by humans?",
+                options: ["Voyager 1", "Hubble Space Telescope", "Sputnik 1", "Luna 2"],
+                answer: 2
+            },
+            {
+                question: "What is the name of the first human to journey into outer space?",
+                options: ["Neil Armstrong", "John Glenn", "Yuri Gagarin", "Alan Shepard"],
+                answer: 2
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+
+        const questionEl = document.getElementById('question');
+        const optionsEl = document.getElementById('options');
+        const submitBtn = document.getElementById('submit');
+        const resultEl = document.getElementById('result');
+
+        function loadQuestion() {
+            const currentQuiz = quizData[currentQuestion];
+            questionEl.textContent = currentQuiz.question;
+            optionsEl.innerHTML = '';
+            currentQuiz.options.forEach((option, index) => {
+                const li = document.createElement('li');
+                li.textContent = option;
+                li.dataset.index = index;
+                li.onclick = selectOption;
+                optionsEl.appendChild(li);
+            });
+        }
+
+        function selectOption() {
+            const options = optionsEl.querySelectorAll('li');
+            options.forEach(option => option.classList.remove('selected'));
+            this.classList.add('selected');
+        }
+
+        function checkAnswer() {
+            const selectedOption = optionsEl.querySelector('.selected');
+            if (selectedOption) {
+                const answerIndex = selectedOption.dataset.index;
+                if (answerIndex == quizData[currentQuestion].answer) {
+                    score++;
+                }
+                currentQuestion++;
+                if (currentQuestion < quizData.length) {
+                    loadQuestion();
+                } else {
+                    showResult();
+                }
+            } else {
+                alert('Please select an option!');
+            }
+        }
+
+        function showResult() {
+            quizEl = document.getElementById('quiz');
+            quizEl.style.display = 'none';
+            submitBtn.style.display = 'none';
+            resultEl.style.display = 'block';
+            resultEl.classList.add('fade-in');
+            resultEl.innerHTML = score >= 7 ? `<img src="https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExZmtlbjR4ZDc2enB5ZTZ5cmNlcW96Y3pyajMxNm5vN21hdDBkMTlzbyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/g9582DNuQppxC/giphy.gif" alt="Winner!"><p>Congratulations! You are a winner with a score of ${score}!</p>` : `<img src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif" alt="Try again"><p>Sorry! You scored ${score}. Try again!</p>`;
+        }
+
+        submitBtn.onclick = checkAnswer;
+        loadQuestion();
+    </script>
+</body>
+</html>
