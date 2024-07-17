@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Player</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            margin: 0;
+        }
+
+        .music-player {
+            text-align: center;
+            background: rgba(28, 31, 38, 0.8);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            animation: fadeIn 2s;
+        }
+
+        .album-art img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin-bottom: 20px;
+            transition: transform 0.5s ease;
+        }
+
+        .album-art img.playing {
+            transform: rotate(360deg);
+        }
+
+        .controls {
+            margin: 20px 0;
+        }
+
+        button {
+            margin: 5px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background: #61dafb;
+            color: #282c34;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+
+        button:hover {
+            background: #21a1f1;
+            transform: scale(1.1);
+        }
+
+        button:active {
+            transform: scale(0.9);
+        }
+
+        .seek-bar {
+            margin-top: 20px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            appearance: none;
+            background: #282c34;
+            height: 5px;
+            border-radius: 5px;
+            outline: none;
+            transition: background 0.3s ease;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 15px;
+            height: 15px;
+            background: #61dafb;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+
+        input[type="range"]:active::-webkit-slider-thumb {
+            background: #21a1f1;
+            transform: scale(1.2);
+        }
+
+        input[type="range"]:focus {
+            background: #3e4147;
+        }
+
+        #fileInput {
+            color: #61dafb;
+            margin-top: 10px;
+            transition: color 0.3s ease;
+        }
+
+        #fileInput:hover {
+            color: #21a1f1;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="music-player">
+        <h1>Music Player</h1>
+        <div class="album-art">
+            <img id="albumArt" src="symbol.png" alt="Album Art">
+        </div>
+        <div class="controls">
+            <input type="file" id="fileInput" accept="audio/*">
+            <button id="playPauseBtn">Play</button>
+            <button id="stopBtn">Stop</button>
+        </div>
+        <div class="seek-bar">
+            <input type="range" id="seekSlider" value="0" max="100">
+        </div>
+    </div>
+    <audio id="audio"></audio>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const audio = document.getElementById('audio');
+            const playPauseBtn = document.getElementById('playPauseBtn');
+            const stopBtn = document.getElementById('stopBtn');
+            const fileInput = document.getElementById('fileInput');
+            const seekSlider = document.getElementById('seekSlider');
+            const albumArt = document.getElementById('albumArt');
+
+            let isPlaying = false;
+
+            fileInput.addEventListener('change', function () {
+                const files = fileInput.files;
+                if (files.length > 0) {
+                    const file = URL.createObjectURL(files[0]);
+                    audio.src = file;
+                    playPauseBtn.textContent = 'Play';
+                    isPlaying = false;
+                    albumArt.src = 'album.jpg';  
+                }
+            });
+
+            playPauseBtn.addEventListener('click', function () {
+                if (isPlaying) {
+                    audio.pause();
+                    playPauseBtn.textContent = 'Play';
+                    albumArt.classList.remove('playing');
+                } else {
+                    audio.play();
+                    playPauseBtn.textContent = 'Pause';
+                    albumArt.classList.add('playing');
+                }
+                isPlaying = !isPlaying;
+            });
+
+            stopBtn.addEventListener('click', function () {
+                audio.pause();
+                audio.currentTime = 0;
+                playPauseBtn.textContent = 'Play';
+                isPlaying = false;
+                albumArt.classList.remove('playing');
+            });
+
+            audio.addEventListener('timeupdate', function () {
+                seekSlider.value = (audio.currentTime / audio.duration) * 100;
+            });
+
+            seekSlider.addEventListener('input', function () {
+                audio.currentTime = (seekSlider.value / 100) * audio.duration;
+            });
+        });
+    </script>
+</body>
+</html>
